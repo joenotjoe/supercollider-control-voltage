@@ -1,0 +1,148 @@
+//////////////////////////////////////////////////////////////////
+//to run this you need the KDTree quark 
+// also the suppercolider plugins give you Tartini if you want to play
+//
+///
+
+SynthDef(\pich_pass_sweep_zeroCrossing, {arg output_range = #[0,1],dur ,freq ,out;
+    var freqb;
+    freqb = Line.ar(output_range.at(0),output_range.at(1),dur,1,0,2);
+    SendReply.kr(Impulse.kr(400), '/the_answer', [ZeroCrossing.ar(SoundIn.ar([0])),K2A.ar(freqb)], [1905,1904,1908]);
+    Out.ar(out,K2A.ar(freqb));
+}).add;
+
+
+SynthDef(\pich_pass_sweep_pitch, {arg output_range = #[0,1],dur ,freq ,out;
+    var freqb,freqout,hasfreq;
+    freqb = Line.ar(output_range.at(0),output_range.at(1),dur,1,0,2);
+    
+    # freqout, hasfreq = Pitch.kr(SoundIn.ar([0]), ampThreshold: 0.02, median: 7);
+    
+    
+    
+// to output cv latter.
+(
+SynthDef(\cv_synth, {arg dur = 1,freq=0.1,out;
+    Line.kr(0,0,dur,0,0,2);
+    Out.ar(out,K2A.ar(freq));
+}).add;
+)    
+    
+    
+    SendReply.kr(Impulse.kr(400), '/the_answer', [ freqout,K2A.ar(freqb)], [1905,1904,1908]);
+    Out.ar(out,K2A.ar(freqb));
+}).add;
+
+SynthDef(\pich_pass_sweep_tartini, {arg output_range = #[0,1],dur ,freq ,out;
+    var freqb,freqout,hasfreq;
+    freqb = Line.ar(output_range.at(0),output_range.at(1),dur,1,0,2);
+    
+    # freqout, hasfreq =Tartini.kr(SoundIn.ar([0]));
+    
+    SendReply.kr(Impulse.kr(400), '/the_answer', [ freqout,K2A.ar(freqb)], [1905,1904,1908]);
+    Out.ar(out,K2A.ar(freqb));
+}).add;
+
+
+
+//to gen a stand midi 88 key freq profile
+// you can look for other freq if you want...micro tuneing fun...
+(
+~freq_to_find =[];
+89.do({arg do; ~freq_to_find= ~freq_to_find.add((do+21).midicps;); });
+
+//~freq_to_find.at(88);
+
+~ofset = Array.newClear(~freq_to_find.size);
+~cv_to_use =Array.newClear(~freq_to_find.size);
+~ofset.postln;
+~freq_to_find.postln;
+)
+
+
+
+//this oscfun gets informaton about outpput going to expert sleeper or your psoibily your dc cuppled  soundcard and looks at the freq comeing in to your sound card then runs throug your array of freqs your looking for and puts in the best match...  
+(
+
+OSCFunc({ |msg|  var difamount;
+//for each msg from \pich_pass_sweep check all freqs ni array
+    ~freq_to_find.do({arg freq,index;
+
+
+//if nill add if now check if closer match replace
+        difamount= (msg.at(3)-freq).abs;
+//if nill
+        if( ~ofset.at(index) == nil ,
+        { ~cv_to_use.put(index,msg.at(4));
+                ~ofset.put(index,difamount);},
+//if not nill
+            {if( ~ofset.at(index) > difamount ,{~cv_to_use.put(index,msg.at(4));~ofset.put(index,difamount);});
+            });
+});
+
+}, '/the_answer');
+)
+
+
+// now sweep freqs takes 10 min but you can change the output_range and time to spped things up.. might make the tuneing less acuret... you may want to play with the setings for pitch ditecion if you want to make this faster/better. harmonics may confuse ZeroCrossing. like when your tuening self osolaing filters... also i have found that the expert sleepers es-3 of wich i have 2 are not consitant from chanall to chanll it my just be my units wich i bought so when you tune keep the chanel you tune with the same one you use...
+
+
+ Synth(\pich_pass_sweep_zeroCrossing, [\out, 0,\dur,60*10,\freq ,0,\output_range ,[0,0.5]]);
+
+
+ Synth(\pich_pass_sweep_tartini, [\out, 0,\dur,60*10,\freq ,0,\output_range ,[0,1]]);
+
+
+ Synth(\pich_pass_sweep_pitch, [\out, 0,\dur,60*10,\freq ,0,\output_range ,[0,1]]);
+
+
+
+
+
+// to look at offsets to see how in tune you are
+//~ofset.do({arg ofsetlook,index; ofsetlook.postln;});
+
+
+
+
+// now we make a KDTree with the data....
+
+~freqto_cv_volt= [];
+
+~freq_to_find.size.do({arg donm; ~freqto_cv_volt = ~freqto_cv_volt.add( [~freq_to_find.at(donm), ~cv_to_use.at(donm)])});
+
+
+//peek if you must...
+//~freqto_cv_volt.at(20);
+// now we are going to use the closeist mach for this you need
+
+
+~tree = KDTree(~freqto_cv_volt);
+
+
+// this is my freq to cv event type this will let us use Pbind with 
+// a voltage contoled synth.... 
+
+Event.addEventType(\freqtocv, { |server|
+    ~freq =  ~tree.nearest([~freq.value,0]).at(1);
+    ~type = \note; 
+    currentEnvironment.play;
+});
+
+
+
+//Now test...
+
+~dur =0.5;
+
+ Pbind(\out ,0,\type, \freqtocv,\instrument, \cv_synth,  \dur, ~dur,\tree ,~tree,\degree,Pseq([0,1,2,3,4,5,6,7,8,9,10],inf)*Pseq([0,1,2],inf)).play;
+
+
+
+
+ Pbind(\out ,0,\type, \freqtocv,\instrument, \cv_synth,  \dur, ~dur,\tree ,~tree,\degree,Pseq([14,15,16,17,18,19,20,21,22,23,25],inf)+Pseq([0,2,4,1],inf)).play;
+
+
+
+
+{[0,SinOsc.ar(8,0,0.6,0.2),SinOsc.ar(0.05,0,0.7,0)+Saw.ar(0.025,0.1),WhiteNoise.ar(1,0)]}.play;
