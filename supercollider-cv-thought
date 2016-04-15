@@ -2,7 +2,9 @@
 //to run this you need the KDTree quark 
 // also the suppercolider plugins give you Tartini if you want to play
 //
-///
+///   C Joseph Barber
+
+///    joenotjoe@gmail....
 
 SynthDef(\pich_pass_sweep_zeroCrossing, {arg output_range = #[0,1],dur ,freq ,out;
     var freqb;
@@ -65,7 +67,7 @@ SynthDef(\pich_pass_sweep_tartini, {arg output_range = #[0,1],dur ,freq ,out;
 
 
 
-//this oscfun gets informaton about outpput going to expert sleeper or your psoibily your dc cuppled  soundcard and looks at the freq comeing in to your sound card then runs throug your array of freqs your looking for and puts in the best match...  
+//this OSCFunc gets informaton about output going to expert sleeper or your possibly your dc cuppled  soundcard and looks at the freq coming in to your sound card then runs through your array of freqs your looking for and puts in the best match...  
 (
 
 OSCFunc({ |msg|  var difamount;
