@@ -20,6 +20,13 @@ SynthDef(\pich_pass_sweep_pitch, {arg output_range = #[0,1],dur ,freq ,out;
     
     
     
+    
+    SendReply.kr(Impulse.kr(400), '/the_answer', [ freqout,K2A.ar(freqb)], [1905,1904,1908]);
+    Out.ar(out,K2A.ar(freqb));
+}).add;
+
+
+
 // to output cv latter.
 (
 SynthDef(\cv_synth, {arg dur = 1,freq=0.1,out;
@@ -29,10 +36,7 @@ SynthDef(\cv_synth, {arg dur = 1,freq=0.1,out;
 )    
     
     
-    SendReply.kr(Impulse.kr(400), '/the_answer', [ freqout,K2A.ar(freqb)], [1905,1904,1908]);
-    Out.ar(out,K2A.ar(freqb));
-}).add;
-
+    
 SynthDef(\pich_pass_sweep_tartini, {arg output_range = #[0,1],dur ,freq ,out;
     var freqb,freqout,hasfreq;
     freqb = Line.ar(output_range.at(0),output_range.at(1),dur,1,0,2);
