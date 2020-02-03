@@ -1,0 +1,10 @@
+(
+	\name:			"Joevolt",
+	\path:			"joevolt",
+	\summary:		"lets you tune a voltage controlled synth useing in suppercoilder",
+	\author:			"Joe Barber",
+	\helpdoc:			"joevolt.html",
+	\url:				"https://github.com/joenotjoe/supercollider-control-voltage",
+	\version:			0.1b,
+	\isCompatible:		{Main.versionAtLeast(3, 1)}
+)
