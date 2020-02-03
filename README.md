@@ -12,4 +12,4 @@ todo
 4. Would like to for pitch detection  to use the Fluid Decomposition Lib Ugens or Tartini. Will probibly wait till the Fluid Decomposition Lib is release it as a Quark. I have used Tartini in the past but wanted everyting to work out of the box on a clean install of SC with out installing other plugins.
 FluidDecomposition Library  http://www.flucoma.org/ 
 http://doc.sccode.org/Classes/Tartini.html
-5. It should be posible to make a tuneing algorithm. Cuerntly it just scans up in volts looking for the freq to match you scale. I feel like most people are in the 1oct/volt relm and useing something like Expert sleeper.  
+5. It should be posible to make a better tuneing algorithm. Cuerntly it just scans up in volts looking for the freq to match you scale. I feel like most people are in the 1oct/volt relm and useing something like Expert sleeper.  
