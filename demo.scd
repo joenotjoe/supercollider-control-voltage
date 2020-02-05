@@ -3,9 +3,10 @@
 89.do({arg do; ~freq_to_find= ~freq_to_find.add((do+26).midicps;); });
 
 
-//this will take 10 min to sweep
-
-~q = Joevolt.new(60*10,0,0,~freq_to_find);
+//this will take 3 minutes to sweep
+// If tuning fails try incresing sweep time   
+~min = 3;
+~q = Joevolt.new(60*min,0,0,~freq_to_find);
 ~q.listen;
 ~q.sweep;
 // wait for a bit ....
