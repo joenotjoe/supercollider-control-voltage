@@ -6,7 +6,7 @@
 //this will take 3 minutes to sweep
 // If tuning fails try incresing sweep time   
 ~min = 3;
-~q = Joevolt.new(60*min,0,0,~freq_to_find);
+~q = Joevolt.new(60*~min,0,0,~freq_to_find);
 ~q.listen;
 ~q.sweep;
 // wait for a bit ....
