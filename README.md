@@ -1,6 +1,7 @@
-There is a new Quark for people who want to play with CV go take a look.
+There is a new Quark for people who want to play with CV And Suppercollider go take a look.
 https://github.com/capital-G/EuroCollider
 
+-----------------------------------------------------------------------------------------------------
 
 
 
